@@ -29,8 +29,9 @@ static bool check_if_chunked(char* line, char** header_value) {
 
 static void check_if_cookie_and_write(char* line, char** cookie) {
 	sscanf(line, "set-cookie: %m[^;\r\n ]", cookie);
-	if (*cookie != NULL)
+	if (*cookie != NULL) {
 		printf("%s\n", *cookie);
+	}
 }
 
 static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
@@ -41,16 +42,19 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 	*chunked = false;
 
 	while (true) {
-		if (getline(&line, &buffer_size, socket_file) == -1)
+		if (getline(&line, &buffer_size, socket_file) == -1) {
 			syserr("getline");
+		}
 
-		if (strcmp(line, "\r\n") == 0)
+		if (strcmp(line, "\r\n") == 0) {
 			break;
+		}
 
 		convert_header_name_to_lowercase(line);
-		if (check_if_chunked(line, &parsed_header))
+		if (check_if_chunked(line, &parsed_header)) {
 			*chunked = true;
-		else check_if_cookie_and_write(line, &parsed_header);
+		} else
+			check_if_cookie_and_write(line, &parsed_header);
 	}
 
 	free(parsed_header);
@@ -58,14 +62,16 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 }
 
 static void find_resource_length_chunked(FILE* socket_file) {
+	// TODO losowe smieci tu ze skopiowanego kodu
 	char* line = NULL;
 	size_t buffer_size = 0;
 	ssize_t getline_result = 0;
 
 	while (true) {
 		// Chunk size read
-		if (getline(&line, &buffer_size, socket_file) == -1)
+		if (getline(&line, &buffer_size, socket_file) == -1) {
 			syserr("getline");
+		}
 
 		// TODO trim newline ???
 		errno = 0;
@@ -76,9 +82,10 @@ static void find_resource_length_chunked(FILE* socket_file) {
 		}
 
 		convert_header_name_to_lowercase(line);
-		if (check_if_chunked(line, &parsed_header))
+		if (check_if_chunked(line, &parsed_header)) {
 			*chunked = true;
-		else check_if_cookie_and_write(line, &parsed_header);
+		} else
+			check_if_cookie_and_write(line, &parsed_header);
 	}
 
 	free(parsed_header);
@@ -100,8 +107,9 @@ static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
 }
 
 void process_server_response_and_report(FILE* socket_file) {
-	if (!read_status_line(socket_file))
+	if (!read_status_line(socket_file)) {
 		return;
+	}
 
 	bool chunked;
 	parse_headers_and_write_cookies(socket_file, &chunked);
