@@ -13,8 +13,9 @@ int main(int argc, char* argv[]) {
 	parse_and_validate_arguments(argc, argv, &input_data);
 	int socket_fd = establish_tcp_connection(&input_data);
 
-	send_http_testing_request(socket_fd, &input_data);
-	process_server_response_and_report(socket_fd);
+	FILE* socket_file = fdopen(socket_fd, "r+");
+	send_http_testing_request(socket_file, &input_data);
+	process_server_response_and_report(socket_file);
 
 	deinitialise(&input_data);
 

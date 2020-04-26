@@ -41,9 +41,7 @@ static void find_and_write_cookies(FILE* socket_file) {
 	free(line);
 }
 
-void process_server_response_and_report(int socket_fd) {
-	FILE* socket_file = fdopen(socket_fd, "r");
-
+void process_server_response_and_report(FILE* socket_file) {
 	if (!read_status_line(socket_file))
 		return;
 

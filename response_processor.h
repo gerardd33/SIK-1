@@ -8,6 +8,6 @@
 #include <stdlib.h>
 #include "err.h"
 
-void process_server_response_and_report(int socket_fd);
+void process_server_response_and_report(FILE* socket_file);
 
 #endif //RESPONSE_PROCESSOR_H_
