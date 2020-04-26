@@ -41,13 +41,14 @@ static void find_and_write_cookies(FILE* socket_file) {
 	free(line);
 }
 
+static void find_and_write_resource_length(FILE* socket_file) {
+
+}
+
 void process_server_response_and_report(FILE* socket_file) {
 	if (!read_status_line(socket_file))
 		return;
 
 	find_and_write_cookies(socket_file);
-
-	// TODO Znajdz dlugosc zasobu, wypisz ja na stdout
-
-	// TODO close socket_file ??
+	find_and_write_resource_length(socket_file);
 }

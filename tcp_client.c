@@ -14,7 +14,7 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 	return address_result;
 }
 
-int establish_tcp_connection(input_data_t* input_data) {
+FILE* establish_tcp_connection(input_data_t* input_data) {
 	struct addrinfo* address_info = get_addrinfo_from_string(input_data->connection_address,
 																														input_data->connection_port);
 
@@ -26,5 +26,7 @@ int establish_tcp_connection(input_data_t* input_data) {
 		syserr("connect");
 
 	freeaddrinfo(address_info);
-	return socket_fd;
+
+	FILE* socket_file = fdopen(socket_fd, "r+");
+	return socket_file;
 }
