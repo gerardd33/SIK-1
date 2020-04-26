@@ -1,6 +1,6 @@
 #include "argument_parser.h"
 #include "tcp_client.h"
-
+#include "http_testing_request_sender.h"
 
 int main(int argc, char* argv[]) {
 	// TODO Sparsuj i zwaliduj argumenty
@@ -9,9 +9,7 @@ int main(int argc, char* argv[]) {
 
 	int socket_fd = establish_tcp_connection(input_data.connection_address, input_data.connection_port);
 
-	// TODO Przygotuj requesta http
-
-	// TODO Wyslij ciasteczka
+	send_http_testing_request(socket_fd, &input_data);
 
 	// TODO Przeslij requesta http do serwera
 

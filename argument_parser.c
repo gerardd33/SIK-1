@@ -1,6 +1,5 @@
 #include "argument_parser.h"
 
-
 const char* HTTP_STRING = "http";
 const char* HTTPS_STRING = "https";
 const size_t HTTPS_STRING_LEN = 5;
@@ -33,8 +32,10 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 	}
 
 	sscanf_result = is_https ?
-			sscanf(string_to_parse, "https://%m[^/]/%ms", &(input_data->host_name), &(input_data->resource_path))
-			: sscanf(string_to_parse, "http://%m[^/]/%ms", &(input_data->host_name), &(input_data->resource_path));
+			sscanf(string_to_parse, "https://%m[^/]/%ms",
+							&(input_data->host_name), &(input_data->resource_path))
+			: sscanf(string_to_parse, "http://%m[^/]/%ms",
+							&(input_data->host_name), &(input_data->resource_path));
 
 	if (sscanf_result != 2)
 		fatal("invalid http tested address");

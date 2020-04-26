@@ -1,7 +1,6 @@
 #include "tcp_client.h"
 
-
-struct addrinfo* get_addrinfo_from_string(char* connection_address, char* connection_port) {
+static struct addrinfo* get_addrinfo_from_string(char* connection_address, char* connection_port) {
 	struct addrinfo address_hints;
 	struct addrinfo* address_result;
 
