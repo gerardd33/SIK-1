@@ -25,7 +25,7 @@ static void send_cookies(int socket_fd, input_data_t* input_data) {
 		fatal("opening cookie file");
 
 	char* line = NULL;
-	size_t buffer_size;
+	size_t buffer_size = 0;
 	ssize_t getline_result = 0;
 
 	char* cookie_key = NULL;
