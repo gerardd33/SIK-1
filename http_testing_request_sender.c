@@ -41,6 +41,7 @@ static void send_cookies(int socket_fd, input_data_t* input_data) {
 			syserr("fprintf");
 	}
 
+	free(line);
 	fclose(cookie_file);
 }
 

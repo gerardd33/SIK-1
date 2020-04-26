@@ -8,9 +8,11 @@ static bool read_status_line(FILE* socket_file) {
 	fscanf(socket_file, "HTTP/1.%d %d %ms\r\n", &http_version, &status_code, &status_message);
 	if (status_code != 200 || strcmp(status_message, "OK") != 0) {
 		printf("HTTP/1.%d %d %s\n", http_version, status_code, status_message);
+		free(status_message);
 		return false;
 	}
 
+	free(status_message);
 	return true;
 }
 
@@ -35,6 +37,8 @@ static void find_and_write_cookies(FILE* socket_file) {
 			printf("%s\n", cookie);
 		free(cookie);
 	}
+
+	free(line);
 }
 
 void process_server_response_and_report(int socket_fd) {
@@ -46,4 +50,6 @@ void process_server_response_and_report(int socket_fd) {
 	find_and_write_cookies(socket_file);
 
 	// TODO Znajdz dlugosc zasobu, wypisz ja na stdout
+
+	// TODO close socket_file ??
 }

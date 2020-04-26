@@ -28,6 +28,8 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 		else is_https = true;
 	}
 
+	input_data->host_name = NULL;
+	input_data->resource_path = NULL;
 	int sscanf_result = is_https ?
 			sscanf(string_to_parse, "https://%m[^/]/%ms",
 							&(input_data->host_name), &(input_data->resource_path))
