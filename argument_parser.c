@@ -40,8 +40,6 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 		fatal("invalid http tested address");
 }
 
-// Puts data from parsed arguments under passed pointer to an input_data struct.
-// Exits if there is an error while parsing or validating.
 void parse_and_validate_arguments(int argc, char* argv[], input_data_t* input_data) {
 	if (argc != 4)
 		fatal("invalid argument count");

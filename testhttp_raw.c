@@ -1,4 +1,5 @@
 #include "argument_parser.h"
+#include "tcp_client.h"
 
 
 int main(int argc, char* argv[]) {
@@ -6,9 +7,7 @@ int main(int argc, char* argv[]) {
 	input_data_t input_data;
 	parse_and_validate_arguments(argc, argv, &input_data);
 
-	printf("Arguments parsed correctly");
-
-	// TODO Polacz sie przez TCP z danym adresem/portem
+	int socket_fd = establish_tcp_connection(input_data.connection_address, input_data.connection_port);
 
 	// TODO Przygotuj requesta http
 
@@ -25,4 +24,6 @@ int main(int argc, char* argv[]) {
 	// TODO Znajdz dlugosc zasobu, wypisz ja na stdout
 
 	// TODO Skrypt
+
+	printf("\nSuccess.\n");
 }
