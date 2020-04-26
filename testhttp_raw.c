@@ -15,6 +15,5 @@ int main(int argc, char* argv[]) {
 	process_server_response_and_report(socket_fd);
 
 	// TODO Skrypt
-
 	printf("\nSuccess.\n");
 }

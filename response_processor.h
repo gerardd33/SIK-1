@@ -2,6 +2,8 @@
 #define RESPONSE_PROCESSOR_H_
 
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 #include "err.h"
 
 void process_server_response_and_report(int socket_fd);
