@@ -27,8 +27,9 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 	if (strcmp(protocol_type, HTTP_STRING) != 0) {
 		if (strcmp(protocol_type, HTTPS_STRING) != 0) {
 			fatal("invalid http tested address");
-		} else
+		} else {
 			is_https = true;
+		}
 	}
 
 	input_data->host_name = NULL;

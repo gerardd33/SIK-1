@@ -53,8 +53,9 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 		convert_header_name_to_lowercase(line);
 		if (check_if_chunked(line, &parsed_header)) {
 			*chunked = true;
-		} else
+		} else {
 			check_if_cookie_and_write(line, &parsed_header);
+		}
 	}
 
 	free(parsed_header);
@@ -84,8 +85,9 @@ static void find_resource_length_chunked(FILE* socket_file) {
 		convert_header_name_to_lowercase(line);
 		if (check_if_chunked(line, &parsed_header)) {
 			*chunked = true;
-		} else
+		} else {
 			check_if_cookie_and_write(line, &parsed_header);
+		}
 	}
 
 	free(parsed_header);
