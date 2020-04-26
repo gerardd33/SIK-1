@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "err.h"
 
 void process_server_response_and_report(FILE* socket_file);

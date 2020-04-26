@@ -57,8 +57,46 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 	free(line);
 }
 
-static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
+static void find_resource_length_chunked(FILE* socket_file) {
+	char* line = NULL;
+	size_t buffer_size = 0;
+	ssize_t getline_result = 0;
 
+	while (true) {
+		// Chunk size read
+		if (getline(&line, &buffer_size, socket_file) == -1)
+			syserr("getline");
+
+		// TODO trim newline ???
+		errno = 0;
+		int chunk_size = (int)strtol(line, NULL, 16);
+		// Invalid number
+		if (chunk_size == 0 && errno != 0) {
+			fatal("parsing chunk size");
+		}
+
+		convert_header_name_to_lowercase(line);
+		if (check_if_chunked(line, &parsed_header))
+			*chunked = true;
+		else check_if_cookie_and_write(line, &parsed_header);
+	}
+
+	free(parsed_header);
+	free(line);
+}
+
+static void find_resource_length_streamed(FILE* socket_file) {
+	int* byte = NULL;
+	while (fread(byte, socket_file)) {
+
+	}
+}
+
+static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
+	size_t resource_length = chunked ? find_resource_length_chunked(FILE* socket_file)
+																: find_resource_length_streamed(FILE* socket_file);
+
+	printf("Dlugosc zasobu: %zu", resource_length);
 }
 
 void process_server_response_and_report(FILE* socket_file) {
