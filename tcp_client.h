@@ -6,8 +6,9 @@
 #include <string.h>
 #include <netdb.h>
 #include "err.h"
+#include "input_data.h"
 
 // Returns the socket descriptor.
-int establish_tcp_connection(char* connection_address, char* connection_port);
+int establish_tcp_connection(input_data_t* input_data);
 
 #endif //TCP_CLIENT_H_

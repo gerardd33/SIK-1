@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 	input_data_t input_data;
 	parse_and_validate_arguments(argc, argv, &input_data);
 
-	int socket_fd = establish_tcp_connection(input_data.connection_address, input_data.connection_port);
+	int socket_fd = establish_tcp_connection(&input_data);
 
 	send_http_testing_request(socket_fd, &input_data);
 

@@ -14,8 +14,9 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 	return address_result;
 }
 
-int establish_tcp_connection(char* connection_address, char* connection_port) {
-	struct addrinfo* address_info = get_addrinfo_from_string(connection_address, connection_port);
+int establish_tcp_connection(input_data_t* input_data) {
+	struct addrinfo* address_info = get_addrinfo_from_string(input_data->connection_address,
+																														input_data->connection_port);
 
 	int socket_fd = socket(address_info->ai_family, address_info->ai_socktype, address_info->ai_protocol);
 	if (socket_fd < 0)
