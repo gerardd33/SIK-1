@@ -1,6 +1,7 @@
 #include "argument_parser.h"
 #include "tcp_client.h"
 #include "http_testing_request_sender.h"
+#include "response_processor.h"
 
 int main(int argc, char* argv[]) {
 	// TODO Sparsuj i zwaliduj argumenty
@@ -11,15 +12,7 @@ int main(int argc, char* argv[]) {
 
 	send_http_testing_request(socket_fd, &input_data);
 
-	// TODO Przeslij requesta http do serwera
-
-	// TODO Wczytaj wiersz statusu z reponse'a serwera (pierwsza linia)
-
-	// TODO Jesli inny niz 200 OK, wypisz te pierwsza linie, zakoncz program
-
-	// TODO Znajdz ciasteczka, wypisz je na stdout
-
-	// TODO Znajdz dlugosc zasobu, wypisz ja na stdout
+	process_server_response_and_report(socket_fd);
 
 	// TODO Skrypt
 

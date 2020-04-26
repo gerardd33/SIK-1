@@ -1,8 +1,7 @@
 #include "argument_parser.h"
 
-const char* HTTP_STRING = "http";
-const char* HTTPS_STRING = "https";
-const size_t HTTPS_STRING_LEN = 5;
+static const char* HTTP_STRING = "http";
+static const char* HTTPS_STRING = "https";
 
 static void parse_and_validate_address_and_port(char* string_to_parse, input_data_t* input_data) {
 	char* separator_position_pointer = strchr(string_to_parse, ':');
@@ -17,7 +16,7 @@ static void parse_and_validate_address_and_port(char* string_to_parse, input_dat
 }
 
 static void parse_and_validate_http_tested_address(char* string_to_parse, input_data_t* input_data) {
-	char protocol_type[HTTPS_STRING_LEN + 1];
+	char protocol_type[strlen(HTTPS_STRING) + 1];
 	// Check if sscanf read one item properly.
 	if (sscanf(string_to_parse, "%[^:]", protocol_type) != 1)
 		fatal("invalid http tested address");

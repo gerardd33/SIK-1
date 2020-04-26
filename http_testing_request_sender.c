@@ -1,7 +1,7 @@
 #include "http_testing_request_sender.h"
 
 // Takes two string arguments: resource path and host name.
-const char* INITIAL_HEADERS_FORMAT = "GET /%s HTTP/1.1\r\n"
+static const char* INITIAL_HEADERS_FORMAT = "GET /%s HTTP/1.1\r\n"
 																		 "Host: %s\r\n"
 																		 "User-Agent: testhttp_raw\r\n"
 																		 "Connection: close\r\n";
