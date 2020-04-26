@@ -18,10 +18,8 @@ static void parse_and_validate_address_and_port(char* string_to_parse, input_dat
 
 static void parse_and_validate_http_tested_address(char* string_to_parse, input_data_t* input_data) {
 	char protocol_type[HTTPS_STRING_LEN + 1];
-	int sscanf_result = sscanf(string_to_parse, "%[^:]", protocol_type);
-
-	// Check if sscanf read one item properly
-	if (sscanf_result != 1)
+	// Check if sscanf read one item properly.
+	if (sscanf(string_to_parse, "%[^:]", protocol_type) != 1)
 		fatal("invalid http tested address");
 
 	bool is_https = false;
@@ -31,7 +29,7 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 		else is_https = true;
 	}
 
-	sscanf_result = is_https ?
+	int sscanf_result = is_https ?
 			sscanf(string_to_parse, "https://%m[^/]/%ms",
 							&(input_data->host_name), &(input_data->resource_path))
 			: sscanf(string_to_parse, "http://%m[^/]/%ms",
