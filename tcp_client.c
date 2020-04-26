@@ -17,7 +17,7 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 FILE* establish_tcp_connection(input_data_t* input_data) {
 	struct addrinfo* address_info = get_addrinfo_from_string(input_data->connection_address,
 																														input_data->connection_port);
-
+	/*
 	int socket_fd = socket(address_info->ai_family, address_info->ai_socktype, address_info->ai_protocol);
 	if (socket_fd < 0)
 		syserr("socket");
@@ -28,5 +28,8 @@ FILE* establish_tcp_connection(input_data_t* input_data) {
 	freeaddrinfo(address_info);
 
 	FILE* socket_file = fdopen(socket_fd, "r+");
+	 */
+	FILE* socket_file = fopen("test_response", "r+");
+
 	return socket_file;
 }
