@@ -35,14 +35,21 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 	input_data->host_name = NULL;
 	input_data->resource_path = NULL;
 	int sscanf_result = is_https ?
-			sscanf(string_to_parse, "https://%m[^/]/%ms",
+			sscanf(string_to_parse, "https://%m[^/]%ms",
 							&(input_data->host_name), &(input_data->resource_path))
-			: sscanf(string_to_parse, "http://%m[^/]/%ms",
+			: sscanf(string_to_parse, "http://%m[^/]%ms",
 							&(input_data->host_name), &(input_data->resource_path));
 
-	if (sscanf_result != 2) {
+	if (sscanf_result == 0) {
 		fatal("invalid http tested address");
 	}
+
+	/* TODO co jesli nie ma slasha
+	if (input_data->resource_path[0] == 0) {
+		input_data->resource_path[0] = '/';
+		// ...
+	}
+	 */
 }
 
 void parse_and_validate_arguments(int argc, char* argv[], input_data_t* input_data) {
