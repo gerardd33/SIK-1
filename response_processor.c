@@ -128,5 +128,5 @@ void process_server_response_and_report(FILE* socket_file) {
 
 	bool chunked;
 	parse_headers_and_write_cookies(socket_file, &chunked);
-	//find_and_write_resource_length(socket_file, chunked);
+	find_and_write_resource_length(socket_file, chunked);
 }
