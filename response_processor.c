@@ -1,5 +1,7 @@
 #include "response_processor.h"
 
+const size_t BUFFER_SIZE = 2048;
+
 // Returns true if status is "200 OK". Returns false and prints the status line otherwise.
 static bool read_status_line(FILE* socket_file) {
 	char* status_message = NULL;
@@ -64,6 +66,7 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 
 static size_t find_resource_length_chunked(FILE* socket_file) {
 	char* line = NULL;
+	size_t resource_length = 0;
 	size_t buffer_size = 0;
 	ssize_t getline_result = 0;
 
@@ -81,14 +84,31 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
 			break;
 		}
 
-		// wczytaj chunka
+		char buffer[BUFFER_SIZE];
+		size_t length_read = 0;
+		length_read = fread(buffer, chunk_size + strlen("\r\n"), sizeof(buffer), socket_file);
+		if (length_read != chunk_size + strlen("\r\n")) {
+			syserr("fread");
+		}
 	}
 
 	free(line);
+	return resource_length;
 }
 
 static size_t find_resource_length_streamed(FILE* socket_file) {
+	char buffer[BUFFER_SIZE];
+	size_t resource_length = 0;
 
+	do {
+		resource_length += fread(buffer, 1, sizeof(buffer), socket_file);
+		if (ferror(socket_file)) {
+			syserr("fread");
+		}
+
+	} while (!feof(socket_file));
+
+	return resource_length;
 }
 
 static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
