@@ -1,11 +1,11 @@
-#ifndef _ERR_
-#define _ERR_
+#ifndef ERR_H_
+#define ERR_H_
 
 /* Wypisuje informację o błędnym zakończeniu funkcji systemowej
 i kończy działanie programu. */
-extern void syserr(const char* fmt, ...) __attribute__((noreturn));
+void syserr(const char* fmt, ...) __attribute__((noreturn));
 
 /* Wypisuje informację o błędzie i kończy działanie programu. */
-extern void fatal(const char* fmt, ...) __attribute__((noreturn));
+void fatal(const char* fmt, ...) __attribute__((noreturn));
 
-#endif
+#endif // ERR_H_

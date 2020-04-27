@@ -12,4 +12,4 @@
 // Returns the socket descriptor.
 FILE* establish_tcp_connection(input_data_t* input_data);
 
-#endif //TCP_CLIENT_H_
+#endif // TCP_CLIENT_H_

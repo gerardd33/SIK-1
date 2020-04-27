@@ -10,4 +10,4 @@ typedef struct input_data {
 	char* resource_path;
 } input_data_t;
 
-#endif //INPUT_DATA_H_
+#endif // INPUT_DATA_H_
