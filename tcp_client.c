@@ -9,7 +9,7 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 	address_hints.ai_socktype = SOCK_STREAM;
 	address_hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(connection_address, connection_port, &address_hints, &address_result) != 0)
-		syserr("getaddrinfo");
+		fatal("failed to find address");
 
 	return address_result;
 }

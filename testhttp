@@ -2,6 +2,8 @@
 import argparse
 from urllib.parse import urlparse
 import subprocess
+import socket
+from contextlib import closing
 
 
 def parse_arguments():
@@ -12,26 +14,47 @@ def parse_arguments():
     return args
 
 
-def run_http():
+def run_http(url, cookie_file_name, http_tested_address):
     netloc = url.netloc
     if url.port is None:
         netloc += ":80"
 
     # TODO zmien sciezke z cmake.../ na ./
-    subprocess.run(["cmake-build-debug/testhttp_raw", netloc, args.cookie_file_name, args.http_tested_address])
+    subprocess.run(["cmake-build-debug/testhttp_raw", netloc, cookie_file_name, http_tested_address])
 
 
-def run_https():
-    pass
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
+
+
+def create_config_file(port, target_host):
+    config_file = open("stunnel_config", "w")
+    config_file.write("[service]\n"
+                      "client = yes\n"
+                      "accept = localhost:{}\n"
+                      "connect = {}\n"
+                      "foreground = yes\n"
+                      "pid = ".format(port, target_host))
+
+
+def run_https(url, cookie_file_name, http_tested_address):
+    target_host = url.netloc
+    if url.port is None:
+        target_host += ":443"
+
+    port = find_free_port()
+    config_file = create_config_file(port, target_host)
 
 
 args = parse_arguments()
 url = urlparse(args.http_tested_address)
 
-if url.scheme == "http":
-    run_http()
-elif url.scheme == "https":
-    run_https()
+if url.scheme == "https":
+    run_https(url, args.cookie_file_name, args.http_tested_address)
 else:
-    pass # error
-
+    run_http(url, args.cookie_file_name, args.http_tested_address)
+# If the prefix is neither "https" nor "http",
+# runhttp_raw will handle the error during its parsing.
