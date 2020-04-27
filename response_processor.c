@@ -1,9 +1,9 @@
 #include "response_processor.h"
 
-const size_t BUFFER_SIZE = 2048;
+const size_t BUFFER_SIZE = 1024;
 
 // Returns true if status is "200 OK".
-// Returns false and prints the status line otherwise.
+// Returns false and prints the status code and message otherwise.
 static bool read_status_line(FILE* socket_file) {
   char* status_message = NULL;
   int http_version, status_code;
@@ -79,8 +79,8 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
     }
 
     errno = 0;
-    int chunk_size = (int)strtol(line, NULL, 16);
-    // Invalid number
+    size_t chunk_size = (size_t)strtol(line, NULL, 16);
+    // Invalid number.
     if (chunk_size == 0) {
       if (errno != 0) {
         syserr("strtol");
@@ -93,10 +93,8 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
     memset(buffer, 0, sizeof(buffer));
     size_t length_read = 0;
     length_read = fread(buffer, 1, chunk_size + strlen("\r\n"), socket_file);
-    if (length_read != chunk_size + strlen("\r\n")) {
-      syserr("fread");
-    }
-
+    printf("R%zu\n", resource_length);
+    fflush(stdout);
     resource_length += chunk_size;
   }
 

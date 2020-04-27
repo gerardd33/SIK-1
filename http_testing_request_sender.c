@@ -1,6 +1,6 @@
 #include "http_testing_request_sender.h"
 
-// Takes two string arguments: resource path and host name.
+// Takes two string parameters: resource path and host name.
 static const char* INITIAL_HEADERS_FORMAT =
     "GET %s HTTP/1.1\r\n"
     "Host: %s\r\n"
@@ -35,7 +35,6 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
     if (getline(&line, &buffer_size, cookie_file) == -1) {
       break;
     }
-    // TODO zrob dobrze handling bledow getline'a
 
     trim_line(line);
     if (first_cookie) {

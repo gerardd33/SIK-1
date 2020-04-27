@@ -28,7 +28,6 @@ static void add_trailing_slash_to_empty_resource(input_data_t* input_data) {
 static void parse_and_validate_http_tested_address(char* string_to_parse,
                                                    input_data_t* input_data) {
   char protocol_type[strlen(HTTPS_STRING) + 1];
-  // Check if sscanf read one item properly.
   if (sscanf(string_to_parse, "%[^:]", protocol_type) != 1) {
     fatal("invalid http tested address");
   }
