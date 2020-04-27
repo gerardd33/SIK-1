@@ -3,7 +3,17 @@ import argparse
 from urllib.parse import urlparse
 import subprocess
 import socket
+import signal
+import sys
 import os
+import time
+
+
+def signal_handler(sig, frame):
+    global object_to_clean
+    if object_to_clean is not None:
+        object_to_clean.clean()
+    sys.exit(1)
 
 
 def find_free_port():
@@ -38,11 +48,15 @@ def wait_until_port_ready(port):
 
 class Stunnel:
     def __init__(self, target_host, port):
+        global object_to_clean
         self.config_file = create_config_file(port, target_host)
         self.log_file = open("subprocess_logs.txt", "w")
         self.process = subprocess.Popen(["stunnel", self.config_file],
                                            stdout=self.log_file, stderr=self.log_file)
         wait_until_port_ready(port)
+        object_to_clean = self
+        time.sleep(10)
+
 
     def clean(self):
         self.process.terminate()
@@ -87,6 +101,8 @@ def parse_arguments():
 
 
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
+
     arguments = parse_arguments()
     tested_url = urlparse(arguments.http_tested_address)
 
@@ -98,4 +114,5 @@ def main():
     # runhttp_raw will handle the error during its parsing.
 
 
+object_to_clean = None
 main()
