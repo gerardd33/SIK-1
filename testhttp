@@ -5,32 +5,6 @@ import subprocess
 import socket
 import os
 
-# TODO lepszy podzial na funkcje, szczegolnie httpsa
-
-def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("cookie_file_name")
-    parser.add_argument("http_tested_address")
-    args = parser.parse_args()
-    return args
-
-
-def run_http_test(connection_address_and_port, cookie_file_name, http_tested_address):
-    testing_process = subprocess.Popen(["cmake-build-debug/testhttp_raw", connection_address_and_port,
-                                     cookie_file_name, http_tested_address])
-    testing_process.wait()
-
-
-def run_http(tested_url, cookie_file_name, http_tested_address):
-    target_host = tested_url.netloc
-    if tested_url.port is None:
-        target_host += ":80"
-
-    print(target_host, cookie_file_name, http_tested_address)
-    # TODO zmien sciezke z cmake.../ na ./
-    run_http_test(target_host, cookie_file_name, http_tested_address)
-    # subprocess.run(["cmake-build-debug/testhttp_raw", target_host, cookie_file_name, http_tested_address])
-
 
 def find_free_port():
     helper_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,24 +16,23 @@ def find_free_port():
 
 def create_config_file(port, target_host):
     config_file = open("stunnel_config", "w")
-    # TODO pid?
-    # TODO foreground na dol
     config_file.write("foreground = yes\n"
                       "[service]\n"
                       "client = yes\n"
                       "accept = localhost:{}\n"
                       "connect = {}\n".format(port, target_host))
+
     config_file.close()
     return config_file.name
 
 
-def wait_till_port_taken(port):
-    # TODO Sleep?
+def wait_until_port_ready(port):
     while True:
         testing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        is_taken = testing_socket.connect_ex(("127.0.0.1", port))
-        if is_taken == 0:
+        port_status = testing_socket.connect_ex(("127.0.0.1", port))
+        if port_status == 0:
             break
+
     testing_socket.close()
 
 
@@ -69,13 +42,19 @@ class Stunnel:
         self.log_file = open("subprocess_logs.txt", "w")
         self.process = subprocess.Popen(["stunnel", self.config_file],
                                            stdout=self.log_file, stderr=self.log_file)
-        wait_till_port_taken(port)
+        wait_until_port_ready(port)
 
     def clean(self):
         self.process.terminate()
         os.remove(self.config_file)
         os.remove(self.log_file.name)
         self.log_file.close()
+
+
+def run_www_test(connection_address_and_port, cookie_file_name, http_tested_address):
+    testing_process = subprocess.Popen(["cmake-build-debug/testhttp_raw", connection_address_and_port,
+                                        cookie_file_name, http_tested_address])
+    testing_process.wait()
 
 
 def run_https(tested_url, cookie_file_name, http_tested_address):
@@ -87,17 +66,36 @@ def run_https(tested_url, cookie_file_name, http_tested_address):
     stunnel_instance = Stunnel(target_host, port)
 
     connection_address_and_port = "localhost:{}".format(port)
-    run_http_test(connection_address_and_port, cookie_file_name, http_tested_address)
-
+    run_www_test(connection_address_and_port, cookie_file_name, http_tested_address)
     stunnel_instance.clean()
 
 
-args = parse_arguments()
-tested_url = urlparse(args.http_tested_address)
+def run_http(tested_url, cookie_file_name, http_tested_address):
+    target_host = tested_url.netloc
+    if tested_url.port is None:
+        target_host += ":80"
 
-if tested_url.scheme == "https":
-    run_https(tested_url, args.cookie_file_name, args.http_tested_address)
-else:
-    run_http(tested_url, args.cookie_file_name, args.http_tested_address)
-# If the prefix is neither "https" nor "http",
-# runhttp_raw will handle the error during its parsing.
+    run_www_test(target_host, cookie_file_name, http_tested_address)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cookie_file_name")
+    parser.add_argument("http_tested_address")
+    arguments = parser.parse_args()
+    return arguments
+
+
+def main():
+    arguments = parse_arguments()
+    tested_url = urlparse(arguments.http_tested_address)
+
+    if tested_url.scheme == "https":
+        run_https(tested_url, arguments.cookie_file_name, arguments.http_tested_address)
+    else:
+        run_http(tested_url, arguments.cookie_file_name, arguments.http_tested_address)
+    # If the prefix is neither "https" nor "http",
+    # runhttp_raw will handle the error during its parsing.
+
+
+main()
