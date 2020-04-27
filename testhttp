@@ -51,7 +51,7 @@ class Stunnel:
         self.config_file = create_config_file(port, target_host)
         self.log_file = open("subprocess_logs.txt", "w")
         self.process = subprocess.Popen(["stunnel", self.config_file],
-                                           stdout=self.log_file, stderr=self.log_file)
+                                        stdout=self.log_file, stderr=self.log_file)
         wait_until_port_ready(port)
         object_to_clean = self
 
@@ -62,14 +62,22 @@ class Stunnel:
         self.log_file.close()
 
 
-def run_www_test(connection_address_and_port, cookie_file_name, http_tested_address):
+def run_www_test(
+        connection_address_and_port,
+        cookie_file_name,
+        http_tested_address):
     current_path = os.path.dirname(os.path.realpath(__file__))
 
     # TODO comment out !!!
     current_path = current_path + "/cmake-build-debug"
 
-    testing_process = subprocess.Popen([current_path + "/testhttp_raw", connection_address_and_port,
-                                        cookie_file_name, http_tested_address])
+    testing_process = subprocess.Popen(
+        [
+            current_path +
+            "/testhttp_raw",
+            connection_address_and_port,
+            cookie_file_name,
+            http_tested_address])
     testing_process.wait()
 
 
@@ -82,7 +90,10 @@ def run_https(tested_url, cookie_file_name, http_tested_address):
     stunnel_instance = Stunnel(target_host, port)
 
     connection_address_and_port = "localhost:{}".format(port)
-    run_www_test(connection_address_and_port, cookie_file_name, http_tested_address)
+    run_www_test(
+        connection_address_and_port,
+        cookie_file_name,
+        http_tested_address)
     stunnel_instance.clean()
 
 
@@ -109,9 +120,15 @@ def main():
     tested_url = urlparse(arguments.http_tested_address)
 
     if tested_url.scheme == "https":
-        run_https(tested_url, arguments.cookie_file_name, arguments.http_tested_address)
+        run_https(
+            tested_url,
+            arguments.cookie_file_name,
+            arguments.http_tested_address)
     else:
-        run_http(tested_url, arguments.cookie_file_name, arguments.http_tested_address)
+        run_http(
+            tested_url,
+            arguments.cookie_file_name,
+            arguments.http_tested_address)
     # If the prefix is neither "https" nor "http",
     # runhttp_raw will handle the error during its parsing.
 
