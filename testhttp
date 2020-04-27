@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import argparse
 from urllib.parse import urlparse
 import subprocess
 import socket
-from contextlib import closing
+import os
 
+# TODO lepszy podzial na funkcje, szczegolnie httpsa
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -15,29 +16,43 @@ def parse_arguments():
 
 
 def run_http(url, cookie_file_name, http_tested_address):
-    netloc = url.netloc
+    target_host = url.netloc
     if url.port is None:
-        netloc += ":80"
+        target_host += ":80"
 
     # TODO zmien sciezke z cmake.../ na ./
-    subprocess.run(["cmake-build-debug/testhttp_raw", netloc, cookie_file_name, http_tested_address])
+    subprocess.run(["cmake-build-debug/testhttp_raw", target_host, cookie_file_name, http_tested_address])
 
 
 def find_free_port():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
+    helper_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    helper_socket.bind(('', 0))
+    _, port = helper_socket.getsockname()
+    helper_socket.close()
+    return port
 
 
 def create_config_file(port, target_host):
     config_file = open("stunnel_config", "w")
-    config_file.write("[service]\n"
+    # TODO pid?
+    # TODO foreground na dol
+    config_file.write("foreground = yes\n"
+                      "[service]\n"
                       "client = yes\n"
                       "accept = localhost:{}\n"
-                      "connect = {}\n"
-                      "foreground = yes\n"
-                      "pid = ".format(port, target_host))
+                      "connect = {}\n".format(port, target_host))
+    config_file.close()
+    return config_file.name
+
+
+def wait_till_port_taken(port):
+    # TODO Sleep?
+    while True:
+        testing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        is_taken = testing_socket.connect_ex(("127.0.0.1", port))
+        if is_taken == 0:
+            break
+    testing_socket.close()
 
 
 def run_https(url, cookie_file_name, http_tested_address):
@@ -46,7 +61,22 @@ def run_https(url, cookie_file_name, http_tested_address):
         target_host += ":443"
 
     port = find_free_port()
-    config_file = create_config_file(port, target_host)
+    config_file_name = create_config_file(port, target_host)
+
+    stunnel_logs_file = open("subprocess_logs.txt", "w")
+    stunnel_process = subprocess.Popen(["stunnel", config_file_name],
+                                       stdout=stunnel_logs_file, stderr=stunnel_logs_file)
+    wait_till_port_taken(port)
+
+    connection_address_and_port = "localhost:{}".format(port)
+    test_process = subprocess.Popen(["cmake-build-debug/testhttp_raw", connection_address_and_port,
+                    cookie_file_name, http_tested_address])
+    test_process.wait()
+
+    stunnel_process.terminate()
+    os.remove(config_file_name)
+    os.remove(stunnel_logs_file.name)
+    stunnel_logs_file.close()
 
 
 args = parse_arguments()
