@@ -10,8 +10,6 @@ void deinitialise(input_data_t* input_data, FILE* socket_file) {
 }
 
 int main(int argc, char* argv[]) {
-	printf("Test started\n");
-
 	input_data_t input_data;
 	parse_and_validate_arguments(argc, argv, &input_data);
 	FILE* socket_file = establish_tcp_connection(&input_data);
@@ -20,6 +18,4 @@ int main(int argc, char* argv[]) {
 	process_server_response_and_report(socket_file);
 
 	deinitialise(&input_data, socket_file);
-
-	printf("\nTest completed\n");
 }

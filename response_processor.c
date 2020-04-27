@@ -7,9 +7,9 @@ static bool read_status_line(FILE* socket_file) {
 	char* status_message = NULL;
 	int http_version, status_code;
 
-	fscanf(socket_file, "HTTP/1.%d %d %ms\r\n", &http_version, &status_code, &status_message);
+	fscanf(socket_file, "HTTP/1.%d %d %m[^\r\n]", &http_version, &status_code, &status_message);
 	if (status_code != 200 || strcmp(status_message, "OK") != 0) {
-		printf("%d %s\n", status_code, status_message);
+		printf("HTTP/1.%d %d %s\n", http_version, status_code, status_message);
 		free(status_message);
 		return false;
 	}
@@ -122,7 +122,7 @@ static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
 	size_t resource_length = chunked ? find_resource_length_chunked(socket_file)
 																: find_resource_length_streamed(socket_file);
 
-	printf("Dlugosc zasobu: %zu", resource_length);
+	printf("Dlugosc zasobu: %zu\n", resource_length);
 }
 
 void process_server_response_and_report(FILE* socket_file) {
