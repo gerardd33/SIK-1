@@ -35,11 +35,19 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 	input_data->host_name = NULL;
 	input_data->resource_path = NULL;
 	int sscanf_result = is_https ?
-			sscanf(string_to_parse, "https://%m[^/]/%ms",
+			sscanf(string_to_parse, "https://%m[^/\r\n]%ms",
 							&(input_data->host_name), &(input_data->resource_path))
-			: sscanf(string_to_parse, "http://%m[^/]/%ms",
+			: sscanf(string_to_parse, "http://%m[^/\r\n]%ms",
 							&(input_data->host_name), &(input_data->resource_path));
 
+	// TODO do funkcji
+	if (input_data->resource_path == NULL) {
+		input_data->resource_path = (char*)malloc(sizeof(char) * 2);
+		input_data->resource_path[0] = '/';
+		input_data->resource_path[1] = 0;
+	}
+
+	//printf("KURWA:%s:\n:%s\n", input_data->host_name, input_data->resource_path);
 	if (sscanf_result == 0) {
 		fatal("invalid http tested address");
 	}

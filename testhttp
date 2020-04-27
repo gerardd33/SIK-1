@@ -64,7 +64,12 @@ class Stunnel:
 
 
 def run_www_test(connection_address_and_port, cookie_file_name, http_tested_address):
-    testing_process = subprocess.Popen(["cmake-build-debug/testhttp_raw", connection_address_and_port,
+    current_path = os.path.dirname(os.path.realpath(__file__))
+
+    # TODO comment out !!!
+    current_path = current_path + "/cmake-build-debug"
+
+    testing_process = subprocess.Popen([current_path + "/testhttp_raw", connection_address_and_port,
                                         cookie_file_name, http_tested_address])
     testing_process.wait()
 
