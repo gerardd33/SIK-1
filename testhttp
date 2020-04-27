@@ -6,14 +6,13 @@ import socket
 import signal
 import sys
 import os
-import time
 
 
 def signal_handler(sig, frame):
     global object_to_clean
     if object_to_clean is not None:
         object_to_clean.clean()
-    sys.exit(1)
+    sys.exit(0)
 
 
 def find_free_port():
