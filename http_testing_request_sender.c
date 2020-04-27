@@ -2,13 +2,12 @@
 
 // Takes two string arguments: resource path and host name.
 static const char* INITIAL_HEADERS_FORMAT = "GET /%s HTTP/1.1\r\n"
-																		 "Host: %s\r\n"
-																		 "User-Agent: testhttp_raw\r\n"
-																		 "Connection: close\r\n";
+																						 "Host: %s\r\n"
+																						 "User-Agent: testhttp_raw\r\n"
+																						 "Connection: close\r\n";
 
-// TODO pozmieniaj wszedzie stdout na socket_fd
 static void send_initial_headers(FILE* socket_file, input_data_t* input_data) {
-	if (fprintf(stdout, INITIAL_HEADERS_FORMAT, input_data->resource_path, input_data->host_name) < 0) {
+	if (fprintf(socket_file, INITIAL_HEADERS_FORMAT, input_data->resource_path, input_data->host_name) < 0) {
 		syserr("fprintf");
 	}
 }
@@ -28,10 +27,6 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
 
 	char* line = NULL;
 	size_t buffer_size = 0;
-	ssize_t getline_result = 0;
-
-	char* cookie_key = NULL;
-	char* cookie_value = NULL;
 	bool first_cookie = true;
 
 	while (true) {
@@ -42,17 +37,17 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
 
 		trim_line(line);
 		if (first_cookie) {
-			if (fprintf(stdout, "Cookie: %s", line) < 0) {
+			if (fprintf(socket_file, "Cookie: %s", line) < 0) {
 				syserr("fprintf");
 			}
 			first_cookie = false;
-		} else if (fprintf(stdout, "; %s", line) < 0) {
+		} else if (fprintf(socket_file, "; %s", line) < 0) {
 				syserr("fprintf");
 			}
 		}
 
 	if (!first_cookie) {
-		if (fprintf(stdout, "\r\n") < 0) {
+		if (fprintf(socket_file, "\r\n") < 0) {
 			syserr("fprintf");
 		}
 	}
@@ -62,7 +57,7 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
 }
 
 static void end_request(FILE* socket_file) {
-	if (fprintf(stdout, "\r\n") < 0) {
+	if (fprintf(socket_file, "\r\n") < 0) {
 		fatal("sending http request");
 	}
 }
