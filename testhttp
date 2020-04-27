@@ -55,8 +55,6 @@ class Stunnel:
                                            stdout=self.log_file, stderr=self.log_file)
         wait_until_port_ready(port)
         object_to_clean = self
-        time.sleep(10)
-
 
     def clean(self):
         self.process.terminate()
