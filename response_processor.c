@@ -42,7 +42,6 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 	char* line = NULL;
 	char* parsed_header = NULL;
 	size_t buffer_size = 0;
-	ssize_t getline_result = 0;
 	*chunked = false;
 
 	while (true) {
@@ -62,7 +61,6 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 		}
 	}
 
-	printf("CHUNKED? %d\n", *chunked);
 	free(parsed_header);
 	free(line);
 }
@@ -71,28 +69,32 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
 	char* line = NULL;
 	size_t resource_length = 0;
 	size_t buffer_size = 0;
-	ssize_t getline_result = 0;
 
 	while (true) {
-		// Chunk size read
+		// Reading the size of current chunk.
 		if (getline(&line, &buffer_size, socket_file) == -1) {
 			syserr("getline");
 		}
 
-		// TODO trim newline ???
 		errno = 0;
 		int chunk_size = (int)strtol(line, NULL, 16);
 		// Invalid number
-		if (chunk_size == 0 && errno != 0) {
-			break;
+		if (chunk_size == 0) {
+			if (errno != 0) {
+				syserr("strtol");
+			} else {
+				break;
+			}
 		}
 
 		char buffer[BUFFER_SIZE];
 		size_t length_read = 0;
-		length_read = fread(buffer, chunk_size + strlen("\r\n"), sizeof(buffer), socket_file);
+		length_read = fread(buffer, 1, chunk_size + strlen("\r\n"), socket_file);
 		if (length_read != chunk_size + strlen("\r\n")) {
 			syserr("fread");
 		}
+
+		resource_length += chunk_size;
 	}
 
 	free(line);

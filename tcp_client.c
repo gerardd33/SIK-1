@@ -30,7 +30,7 @@ FILE* establish_tcp_connection(input_data_t* input_data) {
 
 	FILE* socket_file = fdopen(socket_fd, "r+");
 	 */
-	FILE* socket_file = fopen("test_response", "r+");
+	FILE* socket_file = fopen("test2", "r+");
 
 	return socket_file;
 }
