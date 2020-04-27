@@ -62,8 +62,7 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 	free(line);
 }
 
-static void find_resource_length_chunked(FILE* socket_file) {
-	// TODO losowe smieci tu ze skopiowanego kodu
+static size_t find_resource_length_chunked(FILE* socket_file) {
 	char* line = NULL;
 	size_t buffer_size = 0;
 	ssize_t getline_result = 0;
@@ -79,31 +78,22 @@ static void find_resource_length_chunked(FILE* socket_file) {
 		int chunk_size = (int)strtol(line, NULL, 16);
 		// Invalid number
 		if (chunk_size == 0 && errno != 0) {
-			fatal("parsing chunk size");
+			break;
 		}
 
-		convert_header_name_to_lowercase(line);
-		if (check_if_chunked(line, &parsed_header)) {
-			*chunked = true;
-		} else {
-			check_if_cookie_and_write(line, &parsed_header);
-		}
+		// wczytaj chunka
 	}
 
-	free(parsed_header);
 	free(line);
 }
 
-static void find_resource_length_streamed(FILE* socket_file) {
-	int* byte = NULL;
-	while (fread(byte, socket_file)) {
+static size_t find_resource_length_streamed(FILE* socket_file) {
 
-	}
 }
 
 static void find_and_write_resource_length(FILE* socket_file, bool chunked) {
-	size_t resource_length = chunked ? find_resource_length_chunked(FILE* socket_file)
-																: find_resource_length_streamed(FILE* socket_file);
+	size_t resource_length = chunked ? find_resource_length_chunked(socket_file)
+																: find_resource_length_streamed(socket_file);
 
 	printf("Dlugosc zasobu: %zu", resource_length);
 }
