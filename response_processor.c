@@ -7,7 +7,7 @@ static bool read_status_line(FILE* socket_file) {
 	char* status_message = NULL;
 	int http_version, status_code;
 
-	fscanf(socket_file, "HTTP/1.%d %d %m[^\r\n]", &http_version, &status_code, &status_message);
+	fscanf(socket_file, "HTTP/1.%d %d %m[^\r\n]\r\n", &http_version, &status_code, &status_message);
 	if (status_code != 200 || strcmp(status_message, "OK") != 0) {
 		printf("HTTP/1.%d %d %s\n", http_version, status_code, status_message);
 		free(status_message);
