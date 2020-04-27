@@ -1,14 +1,15 @@
 #ifndef RESPONSE_PROCESSOR_H_
 #define RESPONSE_PROCESSOR_H_
 
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "err.h"
 
 void process_server_response_and_report(FILE* socket_file);
 
-#endif // RESPONSE_PROCESSOR_H_
+#endif  // RESPONSE_PROCESSOR_H_
