@@ -32,7 +32,7 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
 
 	char* cookie_key = NULL;
 	char* cookie_value = NULL;
-	fprintf(stdout, "Cookie: ");
+	bool first_cookie = true;
 
 	while (true) {
 		if (getline(&line, &buffer_size, cookie_file) == -1) {
@@ -41,7 +41,18 @@ static void send_cookies(FILE* socket_file, input_data_t* input_data) {
 		// TODO zrob dobrze handling bledow getline'a
 
 		trim_line(line);
-		if (fprintf(stdout, "%s; ", line) < 0) {
+		if (first_cookie) {
+			if (fprintf(stdout, "Cookie: %s", line) < 0) {
+				syserr("fprintf");
+			}
+			first_cookie = false;
+		} else if (fprintf(stdout, "; %s", line) < 0) {
+				syserr("fprintf");
+			}
+		}
+
+	if (!first_cookie) {
+		if (fprintf(stdout, "\r\n") < 0) {
 			syserr("fprintf");
 		}
 	}
