@@ -16,6 +16,14 @@ static void parse_and_validate_address_and_port(char* string_to_parse, input_dat
 	input_data->connection_port = separator_position_pointer;
 }
 
+static void add_trailing_slash_to_empty_resource(input_data_t* input_data) {
+	if (input_data->resource_path == NULL) {
+		input_data->resource_path = (char*)malloc(sizeof(char) * 2);
+		input_data->resource_path[0] = '/';
+		input_data->resource_path[1] = 0;
+	}
+}
+
 static void parse_and_validate_http_tested_address(char* string_to_parse, input_data_t* input_data) {
 	char protocol_type[strlen(HTTPS_STRING) + 1];
 	// Check if sscanf read one item properly.
@@ -40,14 +48,9 @@ static void parse_and_validate_http_tested_address(char* string_to_parse, input_
 			: sscanf(string_to_parse, "http://%m[^/\r\n]%ms",
 							&(input_data->host_name), &(input_data->resource_path));
 
-	// TODO do funkcji
-	if (input_data->resource_path == NULL) {
-		input_data->resource_path = (char*)malloc(sizeof(char) * 2);
-		input_data->resource_path[0] = '/';
-		input_data->resource_path[1] = 0;
-	}
+	add_trailing_slash_to_empty_resource(input_data);
 
-	//printf("KURWA:%s:\n:%s\n", input_data->host_name, input_data->resource_path);
+	//printf("HOST/RESOURCE:%s:\n:%s\n", input_data->host_name, input_data->resource_path);
 	if (sscanf_result == 0) {
 		fatal("invalid http tested address");
 	}

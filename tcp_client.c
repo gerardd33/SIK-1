@@ -10,11 +10,11 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 	address_hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(connection_address, connection_port, &address_hints, &address_result) != 0)
 		fatal("failed to find address");
-
+	
 	return address_result;
 }
 
-FILE* establish_tcp_connection(input_data_t* input_data) {
+int establish_tcp_connection(input_data_t* input_data) {
 	struct addrinfo* address_info = get_addrinfo_from_string(input_data->connection_address,
 																														input_data->connection_port);
 
@@ -28,9 +28,5 @@ FILE* establish_tcp_connection(input_data_t* input_data) {
 	}
 
 	freeaddrinfo(address_info);
-
-	FILE* socket_file = fdopen(socket_fd, "r+");
-
-	//FILE* socket_file = fopen("test2", "r+");
-	return socket_file;
+	return socket_fd;
 }
