@@ -88,6 +88,7 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
 		}
 
 		char buffer[BUFFER_SIZE];
+		memset(buffer, 0, sizeof(buffer));
 		size_t length_read = 0;
 		length_read = fread(buffer, 1, chunk_size + strlen("\r\n"), socket_file);
 		if (length_read != chunk_size + strlen("\r\n")) {
@@ -103,6 +104,7 @@ static size_t find_resource_length_chunked(FILE* socket_file) {
 
 static size_t find_resource_length_streamed(FILE* socket_file) {
 	char buffer[BUFFER_SIZE];
+	memset(buffer, 0, sizeof(buffer));
 	size_t resource_length = 0;
 
 	do {
