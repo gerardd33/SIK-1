@@ -25,11 +25,13 @@ static void convert_header_name_to_lowercase(char* line) {
 }
 
 static bool check_if_chunked(char* line, char** header_value) {
+	*header_value = NULL;
 	sscanf(line, "transfer-encoding: %m[^\r\n]", header_value);
-	return (*header_value != NULL || strstr(*header_value, "chunked") != NULL);
+	return (*header_value != NULL && strstr(*header_value, "chunked") != NULL);
 }
 
 static void check_if_cookie_and_write(char* line, char** cookie) {
+	*cookie = NULL;
 	sscanf(line, "set-cookie: %m[^;\r\n ]", cookie);
 	if (*cookie != NULL) {
 		printf("%s\n", *cookie);
@@ -60,6 +62,7 @@ static void parse_headers_and_write_cookies(FILE* socket_file, bool* chunked) {
 		}
 	}
 
+	printf("CHUNKED? %d\n", *chunked);
 	free(parsed_header);
 	free(line);
 }
@@ -125,5 +128,5 @@ void process_server_response_and_report(FILE* socket_file) {
 
 	bool chunked;
 	parse_headers_and_write_cookies(socket_file, &chunked);
-	find_and_write_resource_length(socket_file, chunked);
+	//find_and_write_resource_length(socket_file, chunked);
 }

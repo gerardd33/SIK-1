@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	send_http_testing_request(socket_file, &input_data);
 	process_server_response_and_report(socket_file);
 
-	deinitialise(&input_data, socket_file);
+	//deinitialise(&input_data, socket_file);
 
 	// TODO Skrypt
 	printf("\nSuccess.\n");

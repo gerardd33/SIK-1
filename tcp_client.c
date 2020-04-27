@@ -9,15 +9,16 @@ static struct addrinfo* get_addrinfo_from_string(char* connection_address, char*
 	address_hints.ai_socktype = SOCK_STREAM;
 	address_hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(connection_address, connection_port, &address_hints, &address_result) != 0)
-		fatal("failed to establish tcp connection");
+		syserr("getaddrinfo");
 
 	return address_result;
 }
 
 FILE* establish_tcp_connection(input_data_t* input_data) {
+	/*
 	struct addrinfo* address_info = get_addrinfo_from_string(input_data->connection_address,
 																														input_data->connection_port);
-	/*
+
 	int socket_fd = socket(address_info->ai_family, address_info->ai_socktype, address_info->ai_protocol);
 	if (socket_fd < 0)
 		syserr("socket");
